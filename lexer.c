@@ -1,4 +1,5 @@
 #include "include/lexer.h"
+#include "include/token.h"
 #include <ctype.h>
 
 void lexer_init(Lexer* lexer, char* program) {
@@ -19,6 +20,15 @@ static void lexer_next_char(Lexer* lexer) {
 static void lexer_skip_whitespace(Lexer* lexer) {
   while (lexer->curr_char == '\n' || lexer->curr_char == '\t' || lexer->curr_char == ' ' || lexer->curr_char == '\r')
     lexer_next_char(lexer);
+}
+
+static TokenType lexer_check_keyword(const char* str) {
+  for (int i = 0 ; i < TT_END + 1 ; i++) {
+    if (!strcmp(str, TOKENS[i])) {
+      return i;
+    }
+  }
+  return TT_IDENT;
 }
 
 Token lexer_next(Lexer* lexer) {
@@ -56,11 +66,11 @@ Token lexer_next(Lexer* lexer) {
       tk.lexeme[lexer->curr - start] = '\0';
     }
     else if (isalpha(lexer->curr_char)) {
-      tk.type = TT_IDENT;
       int start = lexer->curr;
       while (isalnum(lexer->curr_char)) lexer_next_char(lexer);
       strncpy(tk.lexeme, lexer->source + start, lexer->curr - start);
       tk.lexeme[lexer->curr - start] = '\0';
+      tk.type = lexer_check_keyword(tk.lexeme);
     }
     return tk;
   }

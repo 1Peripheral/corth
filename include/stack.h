@@ -7,7 +7,7 @@
   #define MAX_STACK_CAPACITY 256
 #endif
 
-typedef int Value;
+typedef float Value;
 
 typedef struct Element {
   Value value;
@@ -25,6 +25,7 @@ Element* new_element(Value value);
 Stack* make_stack();
 void stack_push(Stack* stack, Value value);
 Value stack_pop(Stack* stack);
+bool stack_empty(Stack* stack);
 void stack_dump(Stack* stack);
 void stack_free(Stack* stack);
 

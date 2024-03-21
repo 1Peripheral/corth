@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include "include/stack.h"
+#include "include/pprint.h"
 
 Element* new_element(Value value) {
   Element* new = (Element*) MALLOC(sizeof(Element));
@@ -33,14 +33,20 @@ void stack_push(Stack* stack, Value value) {
 
 Value stack_pop(Stack* stack) {
   ASSERT(stack != NULL && "Stack is null");
-  ASSERT(stack-> top != NULL && "Tried to pop an empty stack");
+  ASSERT(stack->top != NULL && "Tried to pop an empty stack");
 
   Element* popped = stack->top;
   Value value = popped->value;
 
   stack->top = popped->next;
+  stack->size--;
   FREE(popped);
+
   return value;
+}
+
+bool stack_empty(Stack* stack) {
+  return stack->size == 0;
 }
 
 void stack_dump(Stack* stack) {
@@ -48,11 +54,12 @@ void stack_dump(Stack* stack) {
   
   Element* current = stack->top;
 
-  printf("STACK DUMP :\n");
+  cprint(DIM, "STACK DUMP :");
   while (current) {
-    printf("%d\n", current->value);
+    cprint(DIM, "%g  ", current->value);
     current = current->next;
   }
+  printf("\n");
 }
 
 void stack_free(Stack* stack) {

@@ -15,8 +15,16 @@
 #define DIM     "\x1b[2m"
 #define BOLD    "\x1b[1m"
 
+typedef enum {
+  INFO,
+  DEBUG,
+  WARNING,
+  ERROR,
+} LogType;
+
 void pprint(const char* format, ...);
 void cprint(const char* color, const char* format, ...);
+void plog(LogType type, const char* format, ...);
 
 #ifdef PPRINT_IMPL
 void pprint(const char* format, ...) {
@@ -35,6 +43,28 @@ void cprint(const char* color, const char* format, ...) {
   printf("%s\n", RESET);
   va_end(args);
 }
+void plog(LogType type, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  switch (type) {
+  case INFO: 
+    printf("%s", GREEN);
+    break;
+  case DEBUG:
+    printf("%s", BLUE);
+    break;
+  case WARNING:
+    printf("%s", YELLOW);
+    break;
+  case ERROR:
+    printf("%s", RED);
+    break;
+  }
+  vprintf(format, args);
+  printf("%s\n", RESET);
+  va_end(args);
+}
+
 #endif //PPRINT_IMPL
 
 #endif //PPRINT_H_

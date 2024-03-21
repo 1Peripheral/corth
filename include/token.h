@@ -13,10 +13,12 @@ typedef enum {
   TT_MINUS,
   TT_SLASH,
   TT_ASTERISK,
-  TT_OP_KEY, 
+  TT_OP_DROP, 
   TT_OP_DUP,
   TT_END,
 } TokenType;
+
+extern const char *TOKENS[];
 
 typedef struct {
   TokenType type;

@@ -1,7 +1,7 @@
 #include "include/token.h"
 #include "include/pprint.h"
 
-static const char *TOKENS[TT_END + 1]  = {
+const char *TOKENS[TT_END + 1]  = {
   [TT_UNKN]     = "TT_UNKN",
   [TT_NUMBER]   = "TT_NUMBER",
   [TT_IDENT]    = "TT_IDENT",
@@ -9,8 +9,8 @@ static const char *TOKENS[TT_END + 1]  = {
   [TT_MINUS]    = "TT_MINUS",
   [TT_SLASH]    = "TT_SLASH",
   [TT_ASTERISK] = "TT_ASTERISK",
-  [TT_OP_KEY]   = "TT_OP_KEY",
-  [TT_OP_DUP]   = "TT_OP_DUP",
+  [TT_OP_DROP]   = "drop",
+  [TT_OP_DUP]   = "dup",
   [TT_END]   = "TT_END",
 };
 
