@@ -1,4 +1,5 @@
 #include "include/lexer.h"
+#include <ctype.h>
 
 void lexer_init(Lexer* lexer, char* program) {
   lexer->source = program;
@@ -15,25 +16,54 @@ static void lexer_next_char(Lexer* lexer) {
   lexer->curr_char = lexer->source[lexer->curr];
 } 
 
+void lexer_skip_whitespace(Lexer* lexer) {
+  while (lexer->curr_char == '\n' || lexer->curr_char == '\t' || lexer->curr_char == ' ' || lexer->curr_char == '\r')
+    lexer_next_char(lexer);
+}
+
 Token lexer_next(Lexer* lexer) {
-  // TODO : increment pointer , modify the way i handle tokens
   Token tk;
+  tk.type = TT_UNKN;
+  tk.lexeme[0] = '\0';
+  lexer_skip_whitespace(lexer);
   switch (lexer->curr_char) {
   case '+':
     tk.type = TT_PLUS;
+    tk.lexeme[0] = lexer->curr_char;
     break;
   case '-':
-    return (Token){TT_MINUS, lexer->curr_char};
-  case '*':
-    return (Token){TT_ASTERISK, lexer->curr_char};
-  case '/':
-    return (Token){TT_SLASH, lexer->curr_char};
-  default:
+    tk.type = TT_PLUS;
+    tk.lexeme[0] = lexer->curr_char;
     break;
+  case '*':
+    tk.type = TT_PLUS;
+    tk.lexeme[0] = lexer->curr_char;
+    break;
+  case '/':
+    tk.type = TT_PLUS;
+    tk.lexeme[0] = lexer->curr_char;
+    break;
+  default:
+    if (isdigit(lexer->curr_char)) {
+      tk.type = TT_NUMBER;
+      int start = lexer->curr;
+      while (isdigit(lexer->curr_char)) lexer_next_char(lexer);
+      strncpy(tk.lexeme, lexer->source + start, lexer->curr - start);
+      tk.lexeme[lexer->curr - start] = '\0';
+    }
+    else if (isalpha(lexer->curr_char)) {
+      tk.type = TT_IDENT;
+      int start = lexer->curr;
+      while (isalnum(lexer->curr_char)) lexer_next_char(lexer);
+      strncpy(tk.lexeme, lexer->source + start, lexer->curr - start);
+      tk.lexeme[lexer->curr - start] = '\0';
+    }
+    return tk;
   }
-  return (Token){TT_UNKN, NULL};
+  lexer_next_char(lexer);
+  return tk;
 }
 
 bool lexer_finished(const Lexer* lexer) {
-  return strlen(lexer->source) - 1 <= lexer->curr || lexer->curr_char == '\0';
+  return strlen(lexer->source) <= lexer->curr || lexer->curr_char == '\0';
 }

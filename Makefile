@@ -5,6 +5,6 @@ OUT = corth
 default :
 	$(CC) *.c -o build/$(OUT) $(FLAGS)
 	
-run : main
-	./main
+run :
+	./build/$(OUT)
 

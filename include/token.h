@@ -22,13 +22,4 @@ typedef struct {
   char lexeme[MAX_LEXEME_LEN];
 } Token;
 
-inline Token token_new(TokenType type, char* lexeme);
-
-Token token_new(TokenType type, char* lexeme) {
-  Token tk;
-  tk.type = type;
-  strncpy(tk.lexeme, lexeme, strlen(lexeme));
-  return tk;
-}
-
 #endif //TOKEN_H_
