@@ -15,11 +15,14 @@ typedef enum {
   TT_ASTERISK,
   TT_OP_KEY, 
   TT_OP_DUP,
+  TT_END,
 } TokenType;
 
 typedef struct {
   TokenType type;
   char lexeme[MAX_LEXEME_LEN];
 } Token;
+
+void token_print(Token tk);
 
 #endif //TOKEN_H_

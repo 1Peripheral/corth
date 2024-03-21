@@ -16,31 +16,35 @@ static void lexer_next_char(Lexer* lexer) {
   lexer->curr_char = lexer->source[lexer->curr];
 } 
 
-void lexer_skip_whitespace(Lexer* lexer) {
+static void lexer_skip_whitespace(Lexer* lexer) {
   while (lexer->curr_char == '\n' || lexer->curr_char == '\t' || lexer->curr_char == ' ' || lexer->curr_char == '\r')
     lexer_next_char(lexer);
 }
 
 Token lexer_next(Lexer* lexer) {
+  lexer_skip_whitespace(lexer);
   Token tk;
   tk.type = TT_UNKN;
   tk.lexeme[0] = '\0';
-  lexer_skip_whitespace(lexer);
   switch (lexer->curr_char) {
   case '+':
     tk.type = TT_PLUS;
     tk.lexeme[0] = lexer->curr_char;
     break;
   case '-':
-    tk.type = TT_PLUS;
+    tk.type = TT_MINUS;
     tk.lexeme[0] = lexer->curr_char;
     break;
   case '*':
-    tk.type = TT_PLUS;
+    tk.type = TT_ASTERISK;
     tk.lexeme[0] = lexer->curr_char;
     break;
   case '/':
-    tk.type = TT_PLUS;
+    tk.type = TT_SLASH;
+    tk.lexeme[0] = lexer->curr_char;
+    break;
+  case '\0':
+    tk.type = TT_END;
     tk.lexeme[0] = lexer->curr_char;
     break;
   default:
