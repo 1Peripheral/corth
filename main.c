@@ -4,7 +4,7 @@
 // TODO : handle ctrl+c
 
 int main(int argc, char* argv[]) {
-  Machine interpreter;
+  Interpreter interpreter;
   interpreter_init(&interpreter);
 
   cprint(BOLD, "Corth Interpreter v0.1");

@@ -12,6 +12,8 @@ typedef struct {
 
 void lexer_init(Lexer* lexer, char* program);
 Token lexer_next(Lexer* lexer);
+void lexer_next_char(Lexer* lexer);
+char lexer_peak(const Lexer* lexer);
 bool lexer_finished(const Lexer* lexer);
 
 #endif //LEXER_H_

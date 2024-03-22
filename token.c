@@ -20,7 +20,7 @@ const char *TOKENS[TT_END + 1]  = {
   [TT_OP_EMIT]    = "emit",
   [TT_OP_PERIOD]  = ".",
   [TT_OP_CR]      = "cr",
-  [TT_OP_PRINTSTR]= "\".",
+  [TT_OP_PRINTSTR]= "out\"",
   [TT_END]        = "TT_END",
 };
 

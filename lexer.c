@@ -8,7 +8,7 @@ void lexer_init(Lexer* lexer, char* program) {
   lexer->curr_char = lexer->source[0];
 }
 
-static void lexer_next_char(Lexer* lexer) {
+void lexer_next_char(Lexer* lexer) {
   (lexer->curr)++;
   if (lexer->curr >= strlen(lexer->source)) {
     lexer->curr_char = '\0';
@@ -31,7 +31,7 @@ static TokenType lexer_check_keyword(const char* str) {
   return TT_IDENT;
 }
 
-static char lexer_peak(const Lexer* lexer) {
+char lexer_peak(const Lexer* lexer) {
   if (lexer->curr + 1 >= strlen(lexer->source))
     return '\0';
   return lexer->source[lexer->curr + 1];
