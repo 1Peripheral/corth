@@ -57,7 +57,6 @@ static void do_unary_op(Machine* m, TokenType type) {
   }
 }
 
-// TODO :Return error type
 static Execution_Result evaluate(Machine* m, Token tk) {
   switch (tk.type) {
   case TT_NUMBER:
@@ -82,6 +81,13 @@ static Execution_Result evaluate(Machine* m, Token tk) {
       return UNDERFLOW_ERROR;
     Value val = stack_pop_at(m->stack, 2);
     stack_push(m->stack, val);
+    break;
+  case TT_OP_CR:
+    printf("\n");
+    break;
+  case TT_OP_PRINTSTR:
+    // TODO 
+    plog(DEBUG, "TODO");
     break;
   case TT_UNKN:
     return SYNTAX_ERROR;
@@ -120,6 +126,9 @@ static void machine_handle_command(Machine* m, char* buffer) {
   else if (!strcmp(buffer, "exit")) {
     exit(0);
   }
+  else if (!strcmp(buffer, "clear")) {
+    printf("\033[2J\033[H\n");
+  }
   else {
     plog(ERROR, "Unknown command");
   }
@@ -129,7 +138,7 @@ void machine_repl(Machine* m) {
   char buffer[STDIN_BUFFER_MAX] = {0};
 
   while (true) {
-    printf("> ");
+    printf("#> ");
     fgets(buffer, STDIN_BUFFER_MAX, stdin);
     if (buffer[strlen(buffer) - 1] == '\n')
       buffer[strlen(buffer) - 1] = '\0';

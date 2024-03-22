@@ -20,6 +20,8 @@ typedef enum {
   TT_OP_ROT,
   TT_OP_EMIT,
   TT_OP_PERIOD,
+  TT_OP_CR,
+  TT_OP_PRINTSTR,
   TT_END,
 } TokenType;
 

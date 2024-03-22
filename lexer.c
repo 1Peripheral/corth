@@ -31,11 +31,17 @@ static TokenType lexer_check_keyword(const char* str) {
   return TT_IDENT;
 }
 
+static char lexer_peak(const Lexer* lexer) {
+  if (lexer->curr + 1 >= strlen(lexer->source))
+    return '\0';
+  return lexer->source[lexer->curr + 1];
+}
+
 Token lexer_next(Lexer* lexer) {
   lexer_skip_whitespace(lexer);
   Token tk;
   tk.type = TT_UNKN;
-  tk.lexeme[0] = '\0';
+  memset(tk.lexeme, '\0', MAX_LEXEME_LEN);
   switch (lexer->curr_char) {
   case '+':
     tk.type = TT_PLUS;
@@ -60,6 +66,11 @@ Token lexer_next(Lexer* lexer) {
   case '.':
     tk.type = TT_OP_PERIOD;
     tk.lexeme[0] = lexer->curr_char;
+    if (lexer_peak(lexer) == '\"') {
+      lexer_next_char(lexer);
+      tk.type = TT_OP_PRINTSTR;
+      tk.lexeme[1] = '\"';
+    }
     break;
   default:
     if (isdigit(lexer->curr_char)) {
