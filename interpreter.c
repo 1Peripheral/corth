@@ -1,7 +1,7 @@
-#include "include/machine.h"
+#include "include/interpreter.h"
 #include "include/lexer.h"
 
-void machine_init(Machine* m) {
+void interpreter_init(Machine* m) {
   m->stack = make_stack();
   ASSERT(m->stack);
 }
@@ -33,6 +33,12 @@ static void do_binary_op(Machine* m, TokenType type) {
     break;
   case TT_EQUAL:
     stack_push(m->stack, left == right ? -1 : 0);
+    break;
+  case TT_GREATER: 
+    stack_push(m->stack, left > right ? -1 : 0);
+    break;
+  case TT_LOWER:
+    stack_push(m->stack, left < right ? -1 : 0);
     break;
   default:
     break;
@@ -69,7 +75,7 @@ static Execution_Result evaluate(Machine* m, Token tk) {
     break;
   case TT_PLUS: case TT_MINUS: case TT_SLASH: 
   case TT_ASTERISK: case TT_OP_SWAP: case TT_OP_OVER:
-  case TT_EQUAL:
+  case TT_EQUAL: case TT_GREATER: case TT_LOWER:
     if (m->stack->size < 2)
       return UNDERFLOW_ERROR;
     do_binary_op(m, tk.type);
@@ -102,7 +108,7 @@ static Execution_Result evaluate(Machine* m, Token tk) {
   return SUCCESS; 
 }
 
-static void machine_handle_instruction(Machine* m, char* input) {
+static void interpreter_handle_instruction(Machine* m, char* input) {
   Lexer lex;
   Token tk;
   lexer_init(&lex, input);
@@ -122,7 +128,7 @@ static void machine_handle_instruction(Machine* m, char* input) {
   }
 }
 
-static void machine_handle_command(Machine* m, char* buffer) {
+static void interpreter_handle_command(Machine* m, char* buffer) {
   buffer++;
   if (!strcmp(buffer, "dump_stack")) {
     stack_dump(m->stack);
@@ -138,7 +144,7 @@ static void machine_handle_command(Machine* m, char* buffer) {
   }
 }
 
-void machine_repl(Machine* m) {
+void interpreter_repl(Machine* m) {
   char buffer[STDIN_BUFFER_MAX] = {0};
 
   while (true) {
@@ -148,12 +154,12 @@ void machine_repl(Machine* m) {
       buffer[strlen(buffer) - 1] = '\0';
 
     if (buffer[0] == '@')
-      machine_handle_command(m, buffer);
+      interpreter_handle_command(m, buffer);
     else
-      machine_handle_instruction(m, buffer);
+      interpreter_handle_instruction(m, buffer);
   }
 }
 
-void machine_destroy(Machine* m) {
+void interpreter_destroy(Machine* m) {
   FREE(m->stack);
 }

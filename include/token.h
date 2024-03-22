@@ -14,6 +14,8 @@ typedef enum {
   TT_SLASH,
   TT_ASTERISK,
   TT_EQUAL,
+  TT_GREATER,
+  TT_LOWER,
   TT_OP_POP, 
   TT_OP_DUP,
   TT_OP_SWAP,

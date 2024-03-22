@@ -1,15 +1,15 @@
 #define PPRINT_IMPL
-#include "include/machine.h"
+#include "include/interpreter.h"
 
 // TODO : handle ctrl+c
 
 int main(int argc, char* argv[]) {
-  Machine machine;
-  machine_init(&machine);
+  Machine interpreter;
+  interpreter_init(&interpreter);
 
   cprint(BOLD, "Corth Interpreter v0.1");
-  machine_repl(&machine);
+  interpreter_repl(&interpreter);
 
-  machine_destroy(&machine);
+  interpreter_destroy(&interpreter);
   return 0;
 }

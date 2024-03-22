@@ -63,6 +63,14 @@ Token lexer_next(Lexer* lexer) {
     tk.type = TT_EQUAL;
     tk.lexeme[0] = lexer->curr_char;
     break;
+  case '>':
+    tk.type = TT_GREATER;
+    tk.lexeme[0] = lexer->curr_char;
+    break;
+  case '<':
+    tk.type = TT_LOWER;
+    tk.lexeme[0] = lexer->curr_char;
+    break;
   case '\0':
     tk.type = TT_END;
     tk.lexeme[0] = lexer->curr_char;

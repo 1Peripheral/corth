@@ -20,8 +20,8 @@ typedef enum {
   UNDERFLOW_ERROR,
 } Execution_Result;
 
-void machine_init(Machine* m);
-void machine_repl(Machine* m);
-void machine_destroy(Machine* m);
+void interpreter_init(Machine* m);
+void interpreter_repl(Machine* m);
+void interpreter_destroy(Machine* m);
 
 #endif //MACHINE_H_
