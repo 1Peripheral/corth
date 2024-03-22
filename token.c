@@ -9,6 +9,7 @@ const char *TOKENS[TT_END + 1]  = {
   [TT_MINUS]      = "TT_MINUS",
   [TT_SLASH]      = "TT_SLASH",
   [TT_ASTERISK]   = "TT_ASTERISK",
+  [TT_EQUAL]      = "TT_EQUAL",
   [TT_OP_POP]     = "pop",
   [TT_OP_DUP]     = "dup",
   [TT_OP_SWAP]    = "swap",

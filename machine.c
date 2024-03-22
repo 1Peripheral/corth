@@ -31,6 +31,9 @@ static void do_binary_op(Machine* m, TokenType type) {
     stack_push(m->stack, right);
     stack_push(m->stack, left);
     break;
+  case TT_EQUAL:
+    stack_push(m->stack, left == right ? -1 : 0);
+    break;
   default:
     break;
   }
@@ -66,6 +69,7 @@ static Execution_Result evaluate(Machine* m, Token tk) {
     break;
   case TT_PLUS: case TT_MINUS: case TT_SLASH: 
   case TT_ASTERISK: case TT_OP_SWAP: case TT_OP_OVER:
+  case TT_EQUAL:
     if (m->stack->size < 2)
       return UNDERFLOW_ERROR;
     do_binary_op(m, tk.type);
