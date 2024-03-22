@@ -25,6 +25,8 @@ typedef enum {
 void pprint(const char* format, ...);
 void cprint(const char* color, const char* format, ...);
 void plog(LogType type, const char* format, ...);
+void dim_on();
+void reset_console();
 
 #ifdef PPRINT_IMPL
 void pprint(const char* format, ...) {
@@ -48,21 +50,28 @@ void plog(LogType type, const char* format, ...) {
   va_start(args, format);
   switch (type) {
   case INFO: 
-    printf("%s", GREEN);
+    printf("%s[INFO] ", GREEN);
     break;
   case DEBUG:
-    printf("%s", BLUE);
+    printf("%s[DEBUG] ", BLUE);
     break;
   case WARNING:
-    printf("%s", YELLOW);
+    printf("%s[WARNING] ", YELLOW);
     break;
   case ERROR:
-    printf("%s", RED);
+    printf("%s[ERROR] ", RED);
     break;
   }
   vprintf(format, args);
   printf("%s\n", RESET);
   va_end(args);
+}
+void dim_on() {
+  printf("%s", DIM);
+}
+
+void reset_console() {
+  printf("%s", RESET);
 }
 
 #endif //PPRINT_IMPL

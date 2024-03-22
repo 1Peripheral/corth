@@ -45,6 +45,28 @@ Value stack_pop(Stack* stack) {
   return value;
 }
 
+Value stack_pop_at(Stack* stack, int index) {
+  ASSERT(stack != NULL && "Stack is null");
+  ASSERT(stack->top != NULL && "Tried to pop an empty stack");
+  ASSERT(index < stack->size && "Index out of range");
+  if (index == 0)
+    return stack_pop(stack);
+
+  Element* curr = stack->top;
+  Value value;
+
+  for (int i = 0 ; i < index-1 ; i++)
+    curr =  curr->next;
+
+  Element* popped = curr->next;
+  value = popped->value;
+  curr->next = popped->next;
+  stack->size--;
+  FREE(popped);
+
+  return value;
+}
+
 bool stack_empty(Stack* stack) {
   return stack->size == 0;
 }

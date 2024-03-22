@@ -13,8 +13,13 @@ typedef enum {
   TT_MINUS,
   TT_SLASH,
   TT_ASTERISK,
-  TT_OP_DROP, 
+  TT_OP_POP, 
   TT_OP_DUP,
+  TT_OP_SWAP,
+  TT_OP_OVER,
+  TT_OP_ROT,
+  TT_OP_EMIT,
+  TT_OP_PERIOD,
   TT_END,
 } TokenType;
 

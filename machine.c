@@ -22,52 +22,107 @@ static void do_binary_op(Machine* m, TokenType type) {
   case TT_ASTERISK:
     stack_push(m->stack, left * right);
     break;
+  case TT_OP_SWAP:
+    stack_push(m->stack, right);
+    stack_push(m->stack, left);
+    break;
+  case TT_OP_OVER:
+    stack_push(m->stack, left);
+    stack_push(m->stack, right);
+    stack_push(m->stack, left);
+    break;
+  default:
+    break;
+  }
+}
+
+static void do_unary_op(Machine* m, TokenType type) {
+  switch (type) {
+  case TT_OP_POP:
+    stack_pop(m->stack);
+    break;
+  case TT_OP_DUP:
+    stack_push(m->stack, m->stack->top->value);
+    break;
+  case TT_OP_PERIOD:
+    PRINT_VALUE(stack_pop(m->stack));
+    break;
+  case TT_OP_EMIT:
+    dim_on();
+    printf("%c", (int)stack_pop(m->stack));
+    reset_console();
+    break;
   default:
     break;
   }
 }
 
 // TODO :Return error type
-static void evaluate(Machine* m, Token tk) {
+static Execution_Result evaluate(Machine* m, Token tk) {
   switch (tk.type) {
   case TT_NUMBER:
     stack_push(m->stack, atof(tk.lexeme));
     break;
   case TT_IDENT:
     break;
-  case TT_PLUS:
-  case TT_MINUS:
-  case TT_SLASH:
-  case TT_ASTERISK:
-    if (m->stack->size >= 2)
-      do_binary_op(m, tk.type);
+  case TT_PLUS: case TT_MINUS: case TT_SLASH: 
+  case TT_ASTERISK: case TT_OP_SWAP: case TT_OP_OVER:
+    if (m->stack->size < 2)
+      return UNDERFLOW_ERROR;
+    do_binary_op(m, tk.type);
     break;
-  case TT_OP_DROP:
-    if (!stack_empty(m->stack))
-      stack_pop(m->stack);
+  case TT_OP_POP: case TT_OP_DUP: case TT_OP_PERIOD:
+  case TT_OP_EMIT:
+    if (stack_empty(m->stack))
+      return UNDERFLOW_ERROR;
+    do_unary_op(m, tk.type);
     break;
-  case TT_OP_DUP:
-    if (!stack_empty(m->stack))
-      stack_push(m->stack, m->stack->top->value);
+  case TT_OP_ROT:
+    if (m->stack->size < 3)
+      return UNDERFLOW_ERROR;
+    Value val = stack_pop_at(m->stack, 2);
+    stack_push(m->stack, val);
     break;
   case TT_UNKN:
-    plog(ERROR, "Unknown token : %s ", tk.lexeme);
+    return SYNTAX_ERROR;
     break;
   case TT_END:
     break;
   }
+  return SUCCESS; 
 }
 
-static void machine_handle_input(Machine* m, char* input) {
+static void machine_handle_instruction(Machine* m, char* input) {
   Lexer lex;
   Token tk;
   lexer_init(&lex, input);
   
   while (!lexer_finished(&lex)) {
     tk = lexer_next(&lex);
-    evaluate(m, tk);
+    switch (evaluate(m, tk)) {
+    case SUCCESS:
+      break;
+    case SYNTAX_ERROR:
+      plog(ERROR, "Syntax Error");
+      return;
+    case UNDERFLOW_ERROR:
+      plog(WARNING, "Underflow");
+      return;
+    }
   }
-  stack_dump(m->stack);
+}
+
+static void machine_handle_command(Machine* m, char* buffer) {
+  buffer++;
+  if (!strcmp(buffer, "dump_stack")) {
+    stack_dump(m->stack);
+  }
+  else if (!strcmp(buffer, "exit")) {
+    exit(0);
+  }
+  else {
+    plog(ERROR, "Unknown command");
+  }
 }
 
 void machine_repl(Machine* m) {
@@ -79,7 +134,10 @@ void machine_repl(Machine* m) {
     if (buffer[strlen(buffer) - 1] == '\n')
       buffer[strlen(buffer) - 1] = '\0';
 
-    machine_handle_input(m, buffer);
+    if (buffer[0] == '@')
+      machine_handle_command(m, buffer);
+    else
+      machine_handle_instruction(m, buffer);
   }
 }
 

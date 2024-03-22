@@ -57,6 +57,10 @@ Token lexer_next(Lexer* lexer) {
     tk.type = TT_END;
     tk.lexeme[0] = lexer->curr_char;
     break;
+  case '.':
+    tk.type = TT_OP_PERIOD;
+    tk.lexeme[0] = lexer->curr_char;
+    break;
   default:
     if (isdigit(lexer->curr_char)) {
       tk.type = TT_NUMBER;
@@ -79,5 +83,5 @@ Token lexer_next(Lexer* lexer) {
 }
 
 bool lexer_finished(const Lexer* lexer) {
-  return strlen(lexer->source) <= lexer->curr || lexer->curr_char == '\0';
+  return lexer->curr >= strlen(lexer->source) || lexer->curr_char == '\0';
 }

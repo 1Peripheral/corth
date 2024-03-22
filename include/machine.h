@@ -7,11 +7,18 @@
 
 #define STDIN_BUFFER_MAX 256
 
+
 typedef struct {
   Stack* stack; 
   // constants
   // variables
 } Machine;
+
+typedef enum {
+  SUCCESS,
+  SYNTAX_ERROR,
+  UNDERFLOW_ERROR,
+} Execution_Result;
 
 void machine_init(Machine* m);
 void machine_repl(Machine* m);
