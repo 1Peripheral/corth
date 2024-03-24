@@ -2,14 +2,11 @@
 #define STACK_H_
 
 #include "common.h"
+#include "value.h"
 
 #ifndef MAX_STACK_CAPACITY
   #define MAX_STACK_CAPACITY 256
 #endif
-
-#define PRINT_VALUE(v) cprint(DIM, "%g", v)
-
-typedef float Value;
 
 typedef struct Element {
   Value value;

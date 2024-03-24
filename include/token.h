@@ -25,6 +25,9 @@ typedef enum {
   TT_OP_PERIOD,
   TT_OP_CR,
   TT_OP_PRINTSTR,
+  TT_OP_VAR,
+  TT_OP_ASSIGN,
+  TT_OP_DEREF,
   TT_END,
 } TokenType;
 

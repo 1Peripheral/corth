@@ -78,7 +78,7 @@ void stack_dump(Stack* stack) {
 
   cprint(DIM, "STACK DUMP :");
   while (current) {
-    cprint(DIM, "%g  ", current->value);
+    cprint(DIM, "%d  ", current->value);
     current = current->next;
   }
   printf("\n");

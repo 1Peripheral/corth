@@ -37,6 +37,34 @@ char lexer_peak(const Lexer* lexer) {
   return lexer->source[lexer->curr + 1];
 }
 
+static Token lexer_scan_literal(Lexer* lexer) {
+  Token tk;
+  int start = lexer->curr;
+  while (isalnum(lexer->curr_char)) lexer_next_char(lexer);
+  strncpy(tk.lexeme, lexer->source + start, lexer->curr - start);
+  tk.lexeme[lexer->curr - start] = '\0';
+  tk.type = lexer_check_keyword(tk.lexeme);
+  return tk;
+}
+
+static Token lexer_scan_number(Lexer* lexer) {
+  Token tk;
+  tk.type = TT_NUMBER;
+  int start = lexer->curr;
+  while (isdigit(lexer->curr_char)) lexer_next_char(lexer);
+  strncpy(tk.lexeme, lexer->source + start, lexer->curr - start);
+  tk.lexeme[lexer->curr - start] = '\0';
+  return tk;
+}
+
+static bool ischar(char c) {
+  return c >= '!' && c <= '~'; 
+}
+
+static bool iswhitespace(char c) {
+  return c == ' ' || c == '\n' || c == '\t' || c == '\r';
+}
+
 Token lexer_next(Lexer* lexer) {
   lexer_skip_whitespace(lexer);
   Token tk;
@@ -71,10 +99,6 @@ Token lexer_next(Lexer* lexer) {
     tk.type = TT_LOWER;
     tk.lexeme[0] = lexer->curr_char;
     break;
-  case '\0':
-    tk.type = TT_END;
-    tk.lexeme[0] = lexer->curr_char;
-    break;
   case '.':
     tk.type = TT_OP_PERIOD;
     tk.lexeme[0] = lexer->curr_char;
@@ -84,21 +108,28 @@ Token lexer_next(Lexer* lexer) {
       tk.lexeme[1] = '\"';
     }
     break;
+  case '!':
+    // TODO : handle +!
+    tk.type = TT_OP_ASSIGN;
+    tk.lexeme[0] = lexer->curr_char;
+    if (lexer_peak(lexer) != ' ')
+      tk = lexer_scan_literal(lexer);
+    break;
+  case '@':
+    tk.type = TT_OP_DEREF;
+    tk.lexeme[0] = lexer->curr_char;
+    if (!iswhitespace(lexer_peak(lexer)) && lexer_peak(lexer) != '\0') 
+      tk = lexer_scan_literal(lexer);
+    break;
+  case '\0':
+    tk.type = TT_END;
+    tk.lexeme[0] = lexer->curr_char;
+    break;
   default:
-    if (isdigit(lexer->curr_char)) {
-      tk.type = TT_NUMBER;
-      int start = lexer->curr;
-      while (isdigit(lexer->curr_char)) lexer_next_char(lexer);
-      strncpy(tk.lexeme, lexer->source + start, lexer->curr - start);
-      tk.lexeme[lexer->curr - start] = '\0';
-    }
-    else if (isalpha(lexer->curr_char)) {
-      int start = lexer->curr;
-      while (isalnum(lexer->curr_char)) lexer_next_char(lexer);
-      strncpy(tk.lexeme, lexer->source + start, lexer->curr - start);
-      tk.lexeme[lexer->curr - start] = '\0';
-      tk.type = lexer_check_keyword(tk.lexeme);
-    }
+    if (isdigit(lexer->curr_char))
+      tk = lexer_scan_number(lexer);
+    else if (ischar(lexer->curr_char))
+      tk = lexer_scan_literal(lexer);
     return tk;
   }
   lexer_next_char(lexer);

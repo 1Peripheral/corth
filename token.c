@@ -21,6 +21,9 @@ const char *TOKENS[TT_END + 1]  = {
   [TT_OP_PERIOD]  = ".",
   [TT_OP_CR]      = "cr",
   [TT_OP_PRINTSTR]= "out\"",
+  [TT_OP_VAR]     = "var",
+  [TT_OP_ASSIGN]  = "!",
+  [TT_OP_DEREF]   = "@",
   [TT_END]        = "TT_END",
 };
 

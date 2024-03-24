@@ -1,14 +1,20 @@
+#include <stdint.h>
 #include "include/interpreter.h"
-#include "include/lexer.h"
+
+#define VALUE_OF(ref) *(Value*)(ref)
+#define TO_ADDRESS(val) (uintptr_t)(&val)
 
 void interpreter_init(Interpreter* i) {
   i->stack = make_stack();
+  kv_init(&i->constants);
+  kv_init(&i->definitions);
   ASSERT(i->stack);
 }
 
 static void do_binary_op(Interpreter* i, TokenType type) {
   Value right = stack_pop(i->stack);
   Value left = stack_pop(i->stack);
+  Value* tmp;
   switch (type) {
   case TT_PLUS:
     stack_push(i->stack, left + right);
@@ -40,12 +46,17 @@ static void do_binary_op(Interpreter* i, TokenType type) {
   case TT_LOWER:
     stack_push(i->stack, left < right ? -1 : 0);
     break;
+  case TT_OP_ASSIGN:
+    tmp = (Value*)TO_ADDRESS(right);
+    *tmp = left + VALUE_OF(tmp);
+    break;
   default:
     break;
   }
 }
 
 static void do_unary_op(Interpreter* i, TokenType type) {
+  // Reference* tmp;
   switch (type) {
   case TT_OP_POP:
     stack_pop(i->stack);
@@ -54,16 +65,24 @@ static void do_unary_op(Interpreter* i, TokenType type) {
     stack_push(i->stack, i->stack->top->value);
     break;
   case TT_OP_PERIOD:
-    PRINT_VALUE(stack_pop(i->stack));
+    cprint(DIM, "%d", stack_pop(i->stack));
     break;
   case TT_OP_EMIT:
     dim_on();
     printf("%c", (int)stack_pop(i->stack));
     reset_console();
     break;
+  case TT_OP_DEREF:
+    stack_push(i->stack,
+               VALUE_OF((uintptr_t)stack_pop(i->stack)));
+    break;
   default:
     break;
   }
+}
+
+static bool match(TokenType type1, TokenType type2) {
+  return type1 == type2;  
 }
 
 static Execution_Result print_string(Interpreter* i) {
@@ -81,21 +100,28 @@ static Execution_Result print_string(Interpreter* i) {
 }
 
 static Execution_Result evaluate(Interpreter* i, Token tk) {
+  Token var;
+  Reference* ref;
   switch (tk.type) {
   case TT_NUMBER:
     stack_push(i->stack, atof(tk.lexeme));
     break;
   case TT_IDENT:
+    ref = kv_get(&i->definitions, tk.lexeme);
+    if (ref && ref->as == VALUE_TYPE) {
+      stack_push(i->stack, (uintptr_t)&ref->var);
+    }
     break;
   case TT_PLUS: case TT_MINUS: case TT_SLASH: 
   case TT_ASTERISK: case TT_OP_SWAP: case TT_OP_OVER:
   case TT_EQUAL: case TT_GREATER: case TT_LOWER:
+  case TT_OP_ASSIGN:
     if (i->stack->size < 2)
       return UNDERFLOW_ERROR;
     do_binary_op(i, tk.type);
     break;
   case TT_OP_POP: case TT_OP_DUP: case TT_OP_PERIOD:
-  case TT_OP_EMIT:
+  case TT_OP_EMIT: case TT_OP_DEREF:
     if (stack_empty(i->stack))
       return UNDERFLOW_ERROR;
     do_unary_op(i, tk.type);
@@ -111,6 +137,13 @@ static Execution_Result evaluate(Interpreter* i, Token tk) {
     break;
   case TT_OP_PRINTSTR:
     return print_string(i);
+    break;
+  case TT_OP_VAR:
+    var = lexer_next(&i->lex);
+    if (!match(var.type, TT_IDENT))
+      return SYNTAX_ERROR;
+    if (!kv_get(&i->definitions, var.lexeme))
+      kv_add_value(&i->definitions, var.lexeme, 0);
     break;
   case TT_UNKN:
     return SYNTAX_ERROR;
@@ -165,7 +198,7 @@ void interpreter_repl(Interpreter* i) {
     if (buffer[strlen(buffer) - 1] == '\n')
       buffer[strlen(buffer) - 1] = '\0';
 
-    if (buffer[0] == '@')
+    if (buffer[0] == '#')
       interpreter_handle_command(i, buffer);
     else
       interpreter_handle_instruction(i, buffer);

@@ -4,6 +4,8 @@
 #include "common.h"
 #include "stack.h"
 #include "lexer.h"
+#include "token.h"
+#include "kv.h"
 #include "pprint.h"
 
 #define STDIN_BUFFER_MAX 256
@@ -12,9 +14,9 @@
 typedef struct {
   Lexer lex;
   Stack* stack; 
-  
-  // constants
-  // variables
+  KV constants;
+  KV definitions;
+  // Stored functions
 } Interpreter;
 
 typedef enum {
