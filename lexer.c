@@ -112,7 +112,7 @@ Token lexer_next(Lexer* lexer) {
     // TODO : handle +!
     tk.type = TT_OP_ASSIGN;
     tk.lexeme[0] = lexer->curr_char;
-    if (lexer_peak(lexer) != ' ')
+    if (!iswhitespace(lexer_peak(lexer)) && lexer_peak(lexer) != '\0') 
       tk = lexer_scan_literal(lexer);
     break;
   case '@':

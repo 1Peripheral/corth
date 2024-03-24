@@ -47,8 +47,8 @@ static void do_binary_op(Interpreter* i, TokenType type) {
     stack_push(i->stack, left < right ? -1 : 0);
     break;
   case TT_OP_ASSIGN:
-    tmp = (Value*)TO_ADDRESS(right);
-    *tmp = left + VALUE_OF(tmp);
+    tmp = (Value*)(uintptr_t)right;
+    *tmp = left; 
     break;
   default:
     break;
